@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/palanti-r/go_final_project/db"
 	"log"
 	"net/http"
 	"os"
@@ -12,19 +13,19 @@ const (
 )
 
 func main() {
+	db.InitlDB()
 
 	port := os.Getenv("TODO_PORT")
 	if port == "" {
 		port = ":" + defaultPort
-		log.Printf("Set up port %s\n", port)
+		log.Printf("[INFO] Set up port: %s\n", port)
 	}
 
 	http.Handle("/", http.FileServer(http.Dir(webDir)))
-
 	err := http.ListenAndServe(port, nil)
 
 	if err != nil {
-		log.Fatalf("Listen And Serve - ", err)
+		log.Fatalf("[ERROR] Listen And Serve: %s\n", err)
 	}
 
 }
