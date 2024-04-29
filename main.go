@@ -1,10 +1,12 @@
 package main
 
 import (
-	"github.com/palanti-r/go_final_project/db"
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/palanti-r/go_final_project/db"
+	"github.com/palanti-r/go_final_project/handlers"
 )
 
 const (
@@ -13,7 +15,7 @@ const (
 )
 
 func main() {
-	db.InitlDB()
+	db.InitDB()
 
 	port := os.Getenv("TODO_PORT")
 	if port == "" {
@@ -22,8 +24,13 @@ func main() {
 	}
 
 	http.Handle("/", http.FileServer(http.Dir(webDir)))
-	err := http.ListenAndServe(port, nil)
 
+	http.HandleFunc("/api/nextdate", handlers.NextDateHandler)
+	http.HandleFunc("/api/task", handlers.TaskHandler)
+	http.HandleFunc("/api/task/done", handlers.TaskDoneHandler)
+	http.HandleFunc("/api/tasks", handlers.TasksListHandler)
+
+	err := http.ListenAndServe(port, nil)
 	if err != nil {
 		log.Fatalf("[ERROR] Listen And Serve: %s\n", err)
 	}

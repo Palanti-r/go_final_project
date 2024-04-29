@@ -9,9 +9,7 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-type Store struct {
-	*sql.DB
-}
+var DB *sql.DB
 
 func GetDBFilePath() string {
 	dbFilePath := os.Getenv("TODO_DBFILE")
@@ -24,23 +22,27 @@ func GetDBFilePath() string {
 	}
 	return dbFilePath
 }
-func InitlDB() {
-	db, err := sql.Open("sqlite", GetDBFilePath())
+func InitDB() {
+	DB, err := sql.Open("sqlite", GetDBFilePath())
 	if err != nil {
 		log.Fatalf("[ERROR] Can't open database: %s\n", err)
 	}
 	querySQL := `CREATE TABLE IF NOT EXISTS scheduler (
-				id INTEGER PRIMARY KEY,
-				date VARCHAR(8) NOT NULL,
-  				title TEXT NOT NULL,
-    			comment TEXT,
-  				repeat VARCHAR(128));
-				CREATE INDEX IF NOT EXISTS indexdate ON scheduler (date);`
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		date TEXT NOT NULL,
+		title TEXT NOT NULL,
+		comment TEXT,
+		repeat TEXT CHECK(length(repeat) <= 128)
+	);`
 
+	_, err = DB.Exec(querySQL)
 	log.Println("[INFO] Creating new table")
-	_, err = db.Exec(querySQL)
 
 	if err != nil {
 		log.Fatalf("[ERROR] Executes error: %s\n", err)
+	}
+	_, err = DB.Exec(`CREATE INDEX IF NOT EXISTS idx_scheduler_date ON scheduler(date);`)
+	if err != nil {
+		log.Fatal(err)
 	}
 }
