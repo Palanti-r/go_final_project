@@ -18,7 +18,7 @@ func GetDBFilePath() string {
 	if dbFilePath == "" {
 		currentDir, err := os.Getwd()
 		if err != nil {
-			log.Fatalf("[ERROR] Can't return currnet the current directory: %s\n", err)
+			log.Fatalf("[ERROR] Can't return the current directory: %s\n", err)
 		}
 		dbFilePath = filepath.Join(currentDir, "scheduler.db")
 	}
