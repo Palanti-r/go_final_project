@@ -11,7 +11,7 @@ import (
 
 var DB *sql.DB
 
-func GetDBFilePath() string {
+func getDBFilePath() string {
 	dbFilePath := os.Getenv("TODO_DBFILE")
 	if dbFilePath == "" {
 		currentDir, err := os.Getwd()
@@ -23,7 +23,8 @@ func GetDBFilePath() string {
 	return dbFilePath
 }
 func InitDB() {
-	DB, err := sql.Open("sqlite", GetDBFilePath())
+	var err error
+	DB, err = sql.Open("sqlite", getDBFilePath())
 	if err != nil {
 		log.Fatalf("[ERROR] Can't open database: %s\n", err)
 	}
@@ -38,9 +39,6 @@ func InitDB() {
 	_, err = DB.Exec(querySQL)
 	log.Println("[INFO] Creating new table")
 
-	if err != nil {
-		log.Fatalf("[ERROR] Executes error: %s\n", err)
-	}
 	_, err = DB.Exec(`CREATE INDEX IF NOT EXISTS idx_scheduler_date ON scheduler(date);`)
 	if err != nil {
 		log.Fatal(err)
